@@ -1,0 +1,101 @@
+{
+  "brand": "Dar El Khotba",
+  "brandAr": "دار الخطوبة",
+  "tagline": "La maison des fiançailles",
+  "nav": {
+    "home": "Accueil",
+    "packages": "Nos Coffrets",
+    "cart": "Panier"
+  },
+  "hero": {
+    "subtitle": "L'excellence au service de vos traditions",
+    "cta": "Découvrir nos coffrets"
+  },
+  "howItWorks": {
+    "title": "Comment ça marche ?",
+    "step1": "Choisissez votre coffret",
+    "step2": "Passez votre commande",
+    "step3": "Payez 30% pour confirmer",
+    "step4": "Recevez et payez le reste"
+  },
+  "packages": {
+    "title": "Nos Coffrets",
+    "pageTitle": "Nos Coffrets de Fiançailles",
+    "pageSubtitle": "Trouvez le coffret parfait pour votre khotba",
+    "viewDetails": "Voir les détails",
+    "addToCart": "Ajouter au panier",
+    "backToPackages": "← Retour aux coffrets",
+    "contents": "Contenu du coffret",
+    "youMayLike": "Vous pourriez aussi aimer",
+    "breadcrumbHome": "Accueil",
+    "breadcrumbPackages": "Nos Coffrets"
+  },
+  "pricing": {
+    "total": "Prix total",
+    "payNow": "À payer maintenant (30%)",
+    "payOnDelivery": "À payer à la livraison (70%)",
+    "currency": "DA"
+  },
+  "trust": {
+    "delivery": "Livraison dans les 58 wilayas",
+    "secure": "Paiement sécurisé",
+    "care": "Coffrets préparés avec soin"
+  },
+  "cart": {
+    "title": "Votre Panier",
+    "empty": "Votre panier est vide",
+    "discover": "Découvrir nos coffrets",
+    "summary": "Récapitulatif",
+    "subtotal": "Sous-total",
+    "checkout": "Passer la commande",
+    "continueShopping": "Continuer vos achats",
+    "remove": "Retirer"
+  },
+  "checkout": {
+    "title": "Finaliser votre commande",
+    "info": "Vos informations",
+    "fullName": "Nom complet",
+    "phone": "Numéro de téléphone",
+    "phonePlaceholder": "05XX XXX XXX",
+    "wilaya": "Wilaya",
+    "selectWilaya": "Sélectionner une wilaya",
+    "commune": "Commune",
+    "address": "Adresse complète",
+    "payment": "Paiement",
+    "paymentInstructions": "Veuillez envoyer 30% du montant ({amount} DA) via CCP ou BaridiMob :",
+    "ccpNumber": "CCP: 0023456789 / Clé: 42",
+    "baridiMob": "BaridiMob: 00799999002345678942",
+    "uploadInstructions": "Après le paiement, téléchargez la capture d'écran ci-dessous",
+    "uploadLabel": "Capture d'écran du paiement",
+    "uploadDrag": "Glissez-déposez ou cliquez pour télécharger",
+    "uploadFormats": "JPG, PNG ou WebP",
+    "terms": "En confirmant, vous acceptez de payer les 70% restants à la livraison",
+    "confirm": "Confirmer la commande",
+    "errors": {
+      "nameRequired": "Le nom est requis",
+      "nameMin": "Le nom doit contenir au moins 3 caractères",
+      "phoneRequired": "Le téléphone est requis",
+      "phoneInvalid": "Le numéro doit commencer par 05, 06 ou 07 et contenir 10 chiffres",
+      "wilayaRequired": "La wilaya est requise",
+      "communeRequired": "La commune est requise",
+      "addressRequired": "L'adresse est requise"
+    }
+  },
+  "confirmation": {
+    "title": "Commande confirmée !",
+    "thanks": "Merci pour votre confiance",
+    "orderNumber": "Numéro de commande",
+    "nextSteps": "Prochaines étapes",
+    "step1": "Nous vérifions votre paiement",
+    "step2": "Nous préparons votre coffret",
+    "step3": "Nous expédions votre commande",
+    "step4": "Payez le reste à la livraison",
+    "contact": "Pour toute question, contactez-nous :",
+    "backHome": "Retour à l'accueil"
+  },
+  "footer": {
+    "phone": "Téléphone: 0XX XXX XXXX",
+    "instagram": "Instagram: @darelkhotba",
+    "rights": "© 2026 Dar El Khotba. Tous droits réservés."
+  }
+}

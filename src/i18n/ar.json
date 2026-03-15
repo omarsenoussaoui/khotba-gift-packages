@@ -1,0 +1,101 @@
+{
+  "brand": "Dar El Khotba",
+  "brandAr": "دار الخطوبة",
+  "tagline": "كل ما تحتاجه لخطوبة لا تُنسى",
+  "nav": {
+    "home": "الرئيسية",
+    "packages": "صناديقنا",
+    "cart": "السلة"
+  },
+  "hero": {
+    "subtitle": "فخامة تليق بمناسباتكم السعيدة",
+    "cta": "اكتشف صناديقنا"
+  },
+  "howItWorks": {
+    "title": "كيف يعمل؟",
+    "step1": "اختر الباقة",
+    "step2": "أكد طلبك",
+    "step3": "ادفع 30% للتأكيد",
+    "step4": "استلم وادفع الباقي"
+  },
+  "packages": {
+    "title": "صناديقنا",
+    "pageTitle": "صناديق الخطوبة",
+    "pageSubtitle": "اعثر على الصندوق المثالي لخطوبتك",
+    "viewDetails": "عرض التفاصيل",
+    "addToCart": "أضف إلى السلة",
+    "backToPackages": "العودة للصناديق →",
+    "contents": "محتوى الصندوق",
+    "youMayLike": "قد يعجبك أيضاً",
+    "breadcrumbHome": "الرئيسية",
+    "breadcrumbPackages": "صناديقنا"
+  },
+  "pricing": {
+    "total": "السعر الإجمالي",
+    "payNow": "المبلغ المطلوب الآن (30%)",
+    "payOnDelivery": "المبلغ عند التوصيل (70%)",
+    "currency": "د.ج"
+  },
+  "trust": {
+    "delivery": "توصيل لجميع الولايات",
+    "secure": "دفع آمن",
+    "care": "صناديق محضرة بعناية"
+  },
+  "cart": {
+    "title": "سلتك",
+    "empty": "سلتك فارغة",
+    "discover": "اكتشف صناديقنا",
+    "summary": "ملخص الطلب",
+    "subtotal": "المجموع",
+    "checkout": "إتمام الطلب",
+    "continueShopping": "متابعة التسوق",
+    "remove": "إزالة"
+  },
+  "checkout": {
+    "title": "إتمام الطلب",
+    "info": "معلوماتك",
+    "fullName": "الاسم الكامل",
+    "phone": "رقم الهاتف",
+    "phonePlaceholder": "05XX XXX XXX",
+    "wilaya": "الولاية",
+    "selectWilaya": "اختر ولاية",
+    "commune": "البلدية",
+    "address": "العنوان الكامل",
+    "payment": "الدفع",
+    "paymentInstructions": "يرجى إرسال 30% من المبلغ ({amount} د.ج) عبر CCP أو BaridiMob :",
+    "ccpNumber": "CCP: 0023456789 / Clé: 42",
+    "baridiMob": "BaridiMob: 00799999002345678942",
+    "uploadInstructions": "بعد الدفع، قم بتحميل لقطة الشاشة أدناه",
+    "uploadLabel": "لقطة شاشة الدفع",
+    "uploadDrag": "اسحب وأسقط أو انقر للتحميل",
+    "uploadFormats": "JPG، PNG أو WebP",
+    "terms": "بتأكيد الطلب، توافق على دفع 70% المتبقية عند التوصيل",
+    "confirm": "تأكيد الطلب",
+    "errors": {
+      "nameRequired": "الاسم مطلوب",
+      "nameMin": "يجب أن يحتوي الاسم على 3 أحرف على الأقل",
+      "phoneRequired": "رقم الهاتف مطلوب",
+      "phoneInvalid": "يجب أن يبدأ الرقم بـ 05، 06 أو 07 ويتكون من 10 أرقام",
+      "wilayaRequired": "الولاية مطلوبة",
+      "communeRequired": "البلدية مطلوبة",
+      "addressRequired": "العنوان مطلوب"
+    }
+  },
+  "confirmation": {
+    "title": "!تم تأكيد الطلب",
+    "thanks": "شكراً لثقتكم",
+    "orderNumber": "رقم الطلب",
+    "nextSteps": "الخطوات القادمة",
+    "step1": "سنتحقق من الدفع",
+    "step2": "سنحضر طلبك",
+    "step3": "سنرسله إليك",
+    "step4": "ادفع الباقي عند الاستلام",
+    "contact": "لأي استفسار، تواصلوا معنا:",
+    "backHome": "العودة للرئيسية"
+  },
+  "footer": {
+    "phone": "الهاتف: 0XX XXX XXXX",
+    "instagram": "Instagram: @darelkhotba",
+    "rights": "© 2026 دار الخطوبة. جميع الحقوق محفوظة."
+  }
+}

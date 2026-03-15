@@ -1,0 +1,14 @@
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+WORKDIR /src
+COPY server/DarElKhotba.sln server/
+COPY server/src/ server/src/
+WORKDIR /src/server
+RUN dotnet publish src/DarElKhotba.API/DarElKhotba.API.csproj -c Release -o /app/publish
+
+FROM mcr.microsoft.com/dotnet/aspnet:10.0
+WORKDIR /app
+COPY --from=build /app/publish .
+RUN mkdir -p wwwroot/uploads data
+ENV ASPNETCORE_URLS=http://+:5050
+EXPOSE 5050
+ENTRYPOINT ["dotnet", "DarElKhotba.API.dll"]

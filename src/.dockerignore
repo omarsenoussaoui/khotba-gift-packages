@@ -1,0 +1,10 @@
+node_modules
+dist
+.env
+.claude/
+server/**/bin/
+server/**/obj/
+*.db
+*.db-shm
+*.db-wal
+server/**/wwwroot/uploads/*

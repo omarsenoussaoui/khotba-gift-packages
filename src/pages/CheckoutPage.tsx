@@ -75,13 +75,6 @@ const CheckoutPage = () => {
     navigate(`/order-confirmation/${orderNumber}`);
   };
 
-  const handleFile = useCallback((file: File) => {
-    if (!file.type.startsWith('image/')) return;
-    setScreenshot(file);
-    const reader = new FileReader();
-    reader.onload = (e) => setScreenshotPreview(e.target?.result as string);
-    reader.readAsDataURL(file);
-  }, []);
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();

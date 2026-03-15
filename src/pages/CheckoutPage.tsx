@@ -36,6 +36,14 @@ const CheckoutPage = () => {
   const [screenshot, setScreenshot] = useState<File | null>(null);
   const [screenshotPreview, setScreenshotPreview] = useState<string | null>(null);
 
+  const handleFile = useCallback((file: File) => {
+    if (!file.type.startsWith('image/')) return;
+    setScreenshot(file);
+    const reader = new FileReader();
+    reader.onload = (ev) => setScreenshotPreview(ev.target?.result as string);
+    reader.readAsDataURL(file);
+  }, []);
+
   if (items.length === 0) return <Navigate to="/packages" replace />;
 
   const validate = (): boolean => {

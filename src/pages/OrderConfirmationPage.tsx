@@ -1,5 +1,8 @@
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useQuery } from '@tanstack/react-query';
+import { orderApi } from '@/services/api';
+import { formatPrice } from '@/lib/format';
 import { CheckCircle, Clock, Gift, Truck, Banknote } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -12,7 +15,13 @@ const steps = [
 
 const OrderConfirmationPage = () => {
   const { orderNumber } = useParams<{ orderNumber: string }>();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const { data: orderData } = useQuery({
+    queryKey: ['order', orderNumber],
+    queryFn: () => orderApi.getByNumber(orderNumber!),
+    enabled: !!orderNumber,
+    retry: false,
+  });
 
   return (
     <div className="py-16 px-4">
@@ -40,6 +49,29 @@ const OrderConfirmationPage = () => {
             <p className="text-2xl font-bold text-secondary tabular-nums mt-1">{orderNumber}</p>
           </div>
         </motion.div>
+
+        {/* Order details from API */}
+        {orderData && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="mt-8 rounded-xl border border-secondary/20 bg-accent/30 p-6 text-start max-w-md mx-auto space-y-2 text-sm"
+          >
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">{t('pricing.total')}</span>
+              <span className="font-bold tabular-nums">{formatPrice(orderData.totalPrice, i18n.language)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">{t('pricing.payNow')}</span>
+              <span className="tabular-nums">{formatPrice(orderData.advanceAmount, i18n.language)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">{t('pricing.payOnDelivery')}</span>
+              <span className="tabular-nums">{formatPrice(orderData.remainingAmount, i18n.language)}</span>
+            </div>
+          </motion.div>
+        )}
 
         {/* Next Steps */}
         <motion.div

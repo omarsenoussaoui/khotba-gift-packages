@@ -1,6 +1,6 @@
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { getPackageById, packages } from '@/data/packages';
+import { usePackageBySlug, usePackages } from '@/hooks/usePackages';
 import { formatPrice } from '@/lib/format';
 import { useCartStore } from '@/store/cartStore';
 import { Star, Check } from 'lucide-react';
@@ -23,14 +23,15 @@ const PackageDetailPage = () => {
   const addItem = useCartStore(s => s.addItem);
   const isAr = i18n.language === 'ar';
 
-  const pkg = getPackageById(id || '');
+  const { data: pkg } = usePackageBySlug(id || '');
+  const { data: allPackages = [] } = usePackages();
   if (!pkg) return <div className="py-20 text-center text-muted-foreground">Package not found</div>;
 
   const name = isAr ? pkg.nameAr : pkg.nameFr;
   const desc = isAr ? pkg.descriptionAr : pkg.descriptionFr;
   const items = isAr ? pkg.itemsAr : pkg.itemsFr;
 
-  const nextPkg = packages.find(p => p.tier === pkg.tier + 1);
+  const nextPkg = allPackages.find(p => p.tier === pkg.tier + 1);
 
   const handleAdd = () => {
     addItem(pkg);

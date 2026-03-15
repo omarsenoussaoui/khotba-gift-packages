@@ -12,6 +12,10 @@ dist
 dist-ssr
 *.local
 
+# Environment
+.env
+.env.*
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -20,5 +24,19 @@ dist-ssr
 *.suo
 *.ntvs*
 *.njsproj
-*.sln
 *.sw?
+
+# Claude Code
+.claude/
+
+# .NET
+server/**/bin/
+server/**/obj/
+*.db
+*.db-shm
+*.db-wal
+
+# Uploads
+server/**/wwwroot/uploads/*
+!server/**/wwwroot/uploads/.gitkeep
+nul

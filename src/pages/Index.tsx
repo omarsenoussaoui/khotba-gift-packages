@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { MapPin, Shield, Heart, Gift, ClipboardCheck, CreditCard, Truck } from 'lucide-react';
-import { packages } from '@/data/packages';
+import { usePackages } from '@/hooks/usePackages';
 import PackageCard from '@/components/PackageCard';
 import { motion } from 'framer-motion';
 import heroBg from '@/assets/hero-bg.jpg';
@@ -21,6 +21,7 @@ const trustItems = [
 
 const Index = () => {
   const { t } = useTranslation();
+  const { data: packages = [] } = usePackages();
 
   return (
     <div>

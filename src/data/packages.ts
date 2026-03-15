@@ -1,5 +1,6 @@
 export interface PackageItem {
   id: string;
+  backendId?: number;
   nameFr: string;
   nameAr: string;
   tier: number;

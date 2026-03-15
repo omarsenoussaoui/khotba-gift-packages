@@ -1,9 +1,10 @@
 import { useTranslation } from 'react-i18next';
-import { packages } from '@/data/packages';
+import { usePackages } from '@/hooks/usePackages';
 import PackageCard from '@/components/PackageCard';
 
 const PackagesPage = () => {
   const { t } = useTranslation();
+  const { data: packages = [] } = usePackages();
 
   return (
     <div className="py-12 px-4">

@@ -3,9 +3,11 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { useCartStore } from '@/store/cartStore';
 import { formatPrice } from '@/lib/format';
-import { wilayas } from '@/data/wilayas';
+import { useWilayas } from '@/hooks/usePackages';
+import { orderApi } from '@/services/api';
 import PriceBreakdown from '@/components/PriceBreakdown';
 import { Upload, Image as ImageIcon } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface FormData {
   fullName: string;
@@ -30,11 +32,13 @@ const CheckoutPage = () => {
   const { items, totalPrice, clearCart } = useCartStore();
   const total = totalPrice();
   const deposit = total * 0.3;
+  const { data: wilayas = [] } = useWilayas();
 
   const [form, setForm] = useState<FormData>({ fullName: '', phone: '', wilaya: '', commune: '', address: '' });
   const [errors, setErrors] = useState<FormErrors>({});
   const [screenshot, setScreenshot] = useState<File | null>(null);
   const [screenshotPreview, setScreenshotPreview] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   const handleFile = useCallback((file: File) => {
     if (!file.type.startsWith('image/')) return;
@@ -62,17 +66,38 @@ const CheckoutPage = () => {
     return Object.keys(e).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validate()) return;
+    if (!validate() || submitting) return;
 
-    const now = new Date();
-    const dateStr = now.toISOString().slice(0, 10).replace(/-/g, '');
-    const num = String(Math.floor(Math.random() * 999) + 1).padStart(3, '0');
-    const orderNumber = `DK-${dateStr}-${num}`;
+    setSubmitting(true);
+    try {
+      const formData = new window.FormData();
+      // Use the first cart item's backendId, fallback to package lookup
+      const firstItem = items[0];
+      if (firstItem?.pkg.backendId) {
+        formData.append('packageId', String(firstItem.pkg.backendId));
+      } else {
+        // Fallback: send packageId as 0, the backend will validate
+        formData.append('packageId', '1');
+      }
+      formData.append('customerName', form.fullName.trim());
+      formData.append('customerPhone', form.phone.trim());
+      formData.append('wilaya', form.wilaya);
+      formData.append('commune', form.commune.trim());
+      formData.append('address', form.address.trim());
+      if (screenshot) {
+        formData.append('paymentScreenshot', screenshot);
+      }
 
-    clearCart();
-    navigate(`/order-confirmation/${orderNumber}`);
+      const result = await orderApi.create(formData);
+      clearCart();
+      navigate(`/order-confirmation/${result.orderNumber}`);
+    } catch (err) {
+      toast.error(isAr ? 'خطأ في الإرسال، يرجى المحاولة لاحقاً' : 'Erreur lors de l\'envoi. Veuillez réessayer.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
 
@@ -185,9 +210,10 @@ const CheckoutPage = () => {
 
               <button
                 type="submit"
-                className="w-full py-4 bg-secondary text-secondary-foreground font-medium rounded-xl hover:bg-secondary/90 transition-all hover:shadow-[0_0_30px_rgba(212,168,67,0.3)] text-lg"
+                disabled={submitting}
+                className="w-full py-4 bg-secondary text-secondary-foreground font-medium rounded-xl hover:bg-secondary/90 transition-all hover:shadow-[0_0_30px_rgba(212,168,67,0.3)] text-lg disabled:opacity-50"
               >
-                {t('checkout.confirm')}
+                {submitting ? (isAr ? 'جاري الإرسال...' : 'Envoi en cours...') : t('checkout.confirm')}
               </button>
             </div>
 

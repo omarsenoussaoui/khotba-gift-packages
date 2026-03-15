@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { adminApi, type OrderStatsResponse, type AdminOrderListItem } from '@/services/api';
 import { Package, CalendarDays, TrendingUp, DollarSign, Wallet } from 'lucide-react';
 import AdminLayout from '@/components/admin/AdminLayout';
@@ -14,27 +15,19 @@ const statusColors: Record<string, string> = {
   Cancelled: 'bg-red-100 text-red-800',
 };
 
-const statusLabels: Record<string, string> = {
-  Pending: 'En attente',
-  PaymentVerified: 'Paiement vérifié',
-  Confirmed: 'Confirmée',
-  Preparing: 'En préparation',
-  Shipped: 'Expédiée',
-  Delivered: 'Livrée',
-  Cancelled: 'Annulée',
-};
-
 function formatDA(amount: number) {
   return amount.toLocaleString('fr-FR') + ' DA';
 }
 
-function formatDate(dateStr: string) {
+function formatDate(dateStr: string, locale: string) {
   const d = new Date(dateStr);
-  return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' }) +
-    ', ' + d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+  const loc = locale === 'ar' ? 'ar-DZ' : 'fr-FR';
+  return d.toLocaleDateString(loc, { day: 'numeric', month: 'short', year: 'numeric' }) +
+    ', ' + d.toLocaleTimeString(loc, { hour: '2-digit', minute: '2-digit' });
 }
 
 const AdminDashboardPage = () => {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { data: stats, isLoading } = useQuery<OrderStatsResponse>({
     queryKey: ['admin', 'stats'],
@@ -43,17 +36,17 @@ const AdminDashboardPage = () => {
   });
 
   const statCards = [
-    { label: 'Commandes totales', value: stats?.totalOrders ?? 0, icon: Package, format: (v: number) => String(v) },
-    { label: "Aujourd'hui", value: stats?.ordersToday ?? 0, icon: CalendarDays, format: (v: number) => String(v) },
-    { label: 'Ce mois', value: stats?.ordersThisMonth ?? 0, icon: TrendingUp, format: (v: number) => String(v) },
-    { label: 'Revenu ce mois', value: stats?.revenueThisMonth ?? 0, icon: DollarSign, format: formatDA },
-    { label: 'Revenu total', value: stats?.revenueTotal ?? 0, icon: Wallet, format: formatDA },
+    { label: t('admin.dashboard.totalOrders'), value: stats?.totalOrders ?? 0, icon: Package, format: (v: number) => String(v) },
+    { label: t('admin.dashboard.today'), value: stats?.ordersToday ?? 0, icon: CalendarDays, format: (v: number) => String(v) },
+    { label: t('admin.dashboard.thisMonth'), value: stats?.ordersThisMonth ?? 0, icon: TrendingUp, format: (v: number) => String(v) },
+    { label: t('admin.dashboard.revenueMonth'), value: stats?.revenueThisMonth ?? 0, icon: DollarSign, format: formatDA },
+    { label: t('admin.dashboard.revenueTotal'), value: stats?.revenueTotal ?? 0, icon: Wallet, format: formatDA },
   ];
 
   return (
     <AdminLayout>
       <div className="space-y-8">
-        <h1 className="text-2xl font-serif text-gray-900">Tableau de bord</h1>
+        <h1 className="text-2xl font-serif text-gray-900">{t('admin.dashboard.title')}</h1>
 
         {/* Stat cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
@@ -72,14 +65,14 @@ const AdminDashboardPage = () => {
 
         {/* Orders by status */}
         <div className="bg-white rounded-xl border p-6">
-          <h2 className="text-lg font-medium text-gray-900 mb-4">Commandes par statut</h2>
+          <h2 className="text-lg font-medium text-gray-900 mb-4">{t('admin.dashboard.ordersByStatus')}</h2>
           <div className="flex flex-wrap gap-3">
             {Object.entries(stats?.ordersByStatus ?? {}).map(([status, count]) => (
               <span
                 key={status}
                 className={`px-3 py-1.5 rounded-full text-sm font-medium ${statusColors[status] || 'bg-gray-100 text-gray-800'}`}
               >
-                {statusLabels[status] || status}: {count}
+                {t(`admin.status.${status}`, status)}: {count}
               </span>
             ))}
           </div>
@@ -88,13 +81,13 @@ const AdminDashboardPage = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Popular packages */}
           <div className="bg-white rounded-xl border p-6">
-            <h2 className="text-lg font-medium text-gray-900 mb-4">Coffrets populaires</h2>
+            <h2 className="text-lg font-medium text-gray-900 mb-4">{t('admin.dashboard.popularPackages')}</h2>
             {(stats?.popularPackages?.length ?? 0) > 0 ? (
               <table className="w-full text-sm">
                 <thead>
                   <tr className="text-left text-gray-500 border-b">
-                    <th className="pb-2">Coffret</th>
-                    <th className="pb-2 text-right">Commandes</th>
+                    <th className="pb-2">{t('admin.dashboard.packageCol')}</th>
+                    <th className="pb-2 text-right">{t('admin.dashboard.ordersCol')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -107,13 +100,13 @@ const AdminDashboardPage = () => {
                 </tbody>
               </table>
             ) : (
-              <p className="text-gray-400 text-sm">Aucune commande encore.</p>
+              <p className="text-gray-400 text-sm">{t('admin.dashboard.noOrders')}</p>
             )}
           </div>
 
           {/* Recent orders */}
           <div className="bg-white rounded-xl border p-6">
-            <h2 className="text-lg font-medium text-gray-900 mb-4">Commandes récentes</h2>
+            <h2 className="text-lg font-medium text-gray-900 mb-4">{t('admin.dashboard.recentOrders')}</h2>
             {(stats?.recentOrders?.length ?? 0) > 0 ? (
               <div className="space-y-0">
                 {stats?.recentOrders.map((order: AdminOrderListItem) => (
@@ -128,15 +121,15 @@ const AdminDashboardPage = () => {
                     </div>
                     <div className="text-right">
                       <span className={`text-xs px-2 py-0.5 rounded-full ${statusColors[order.status] || 'bg-gray-100'}`}>
-                        {statusLabels[order.status] || order.status}
+                        {t(`admin.status.${order.status}`, order.status)}
                       </span>
-                      <p className="text-xs text-gray-400 mt-1">{formatDate(order.createdAt)}</p>
+                      <p className="text-xs text-gray-400 mt-1">{formatDate(order.createdAt, i18n.language)}</p>
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-gray-400 text-sm">Aucune commande encore.</p>
+              <p className="text-gray-400 text-sm">{t('admin.dashboard.noOrders')}</p>
             )}
           </div>
         </div>

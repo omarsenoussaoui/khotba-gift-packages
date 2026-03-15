@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { adminApi, type AdminOrderDetail } from '@/services/api';
 import { ArrowLeft, Phone, Star } from 'lucide-react';
 import { toast } from 'sonner';
@@ -27,41 +28,31 @@ const statusColors: Record<string, string> = {
   Cancelled: 'bg-red-100 text-red-800',
 };
 
-const statusLabels: Record<string, string> = {
-  Pending: 'En attente',
-  PaymentVerified: 'Paiement vérifié',
-  Confirmed: 'Confirmée',
-  Preparing: 'En préparation',
-  Shipped: 'Expédiée',
-  Delivered: 'Livrée',
-  Cancelled: 'Annulée',
-};
-
 interface StatusAction {
-  label: string;
+  labelKey: string;
   status: string;
   variant: 'green' | 'red' | 'blue';
 }
 
 const statusActions: Record<string, StatusAction[]> = {
   Pending: [
-    { label: 'Vérifier le paiement ✓', status: 'PaymentVerified', variant: 'green' },
-    { label: 'Annuler ✗', status: 'Cancelled', variant: 'red' },
+    { labelKey: 'admin.actions.verifyPayment', status: 'PaymentVerified', variant: 'green' },
+    { labelKey: 'admin.actions.cancelOrder', status: 'Cancelled', variant: 'red' },
   ],
   PaymentVerified: [
-    { label: 'Confirmer ✓', status: 'Confirmed', variant: 'green' },
-    { label: 'Annuler ✗', status: 'Cancelled', variant: 'red' },
+    { labelKey: 'admin.actions.confirmOrder', status: 'Confirmed', variant: 'green' },
+    { labelKey: 'admin.actions.cancelOrder', status: 'Cancelled', variant: 'red' },
   ],
   Confirmed: [
-    { label: 'Commencer la préparation', status: 'Preparing', variant: 'blue' },
-    { label: 'Annuler ✗', status: 'Cancelled', variant: 'red' },
+    { labelKey: 'admin.actions.startPreparing', status: 'Preparing', variant: 'blue' },
+    { labelKey: 'admin.actions.cancelOrder', status: 'Cancelled', variant: 'red' },
   ],
   Preparing: [
-    { label: 'Marquer comme expédié', status: 'Shipped', variant: 'blue' },
-    { label: 'Annuler ✗', status: 'Cancelled', variant: 'red' },
+    { labelKey: 'admin.actions.markShipped', status: 'Shipped', variant: 'blue' },
+    { labelKey: 'admin.actions.cancelOrder', status: 'Cancelled', variant: 'red' },
   ],
   Shipped: [
-    { label: 'Marquer comme livré ✓', status: 'Delivered', variant: 'green' },
+    { labelKey: 'admin.actions.markDelivered', status: 'Delivered', variant: 'green' },
   ],
 };
 
@@ -75,15 +66,17 @@ function formatDA(amount: number) {
   return amount.toLocaleString('fr-FR') + ' DA';
 }
 
-function formatDate(dateStr: string) {
+function formatDate(dateStr: string, locale: string) {
   const d = new Date(dateStr);
-  return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) +
-    ', ' + d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+  const loc = locale === 'ar' ? 'ar-DZ' : 'fr-FR';
+  return d.toLocaleDateString(loc, { day: 'numeric', month: 'long', year: 'numeric' }) +
+    ', ' + d.toLocaleTimeString(loc, { hour: '2-digit', minute: '2-digit' });
 }
 
 const API_BASE = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5050';
 
 const AdminOrderDetailPage = () => {
+  const { t, i18n } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -106,7 +99,7 @@ const AdminOrderDetailPage = () => {
     mutationFn: ({ orderId, status }: { orderId: number; status: string }) =>
       adminApi.updateStatus(orderId, status),
     onSuccess: () => {
-      toast.success('Statut mis à jour');
+      toast.success(t('admin.orders.statusUpdated'));
       queryClient.invalidateQueries({ queryKey: ['admin', 'order', id] });
       queryClient.invalidateQueries({ queryKey: ['admin', 'orders'] });
       queryClient.invalidateQueries({ queryKey: ['admin', 'stats'] });
@@ -118,7 +111,7 @@ const AdminOrderDetailPage = () => {
     mutationFn: ({ orderId, notes }: { orderId: number; notes: string }) =>
       adminApi.updateNotes(orderId, notes),
     onSuccess: () => {
-      toast.success('Notes sauvegardées');
+      toast.success(t('admin.orders.notesSaved'));
       queryClient.invalidateQueries({ queryKey: ['admin', 'order', id] });
     },
     onError: (err: Error) => toast.error(err.message),
@@ -127,7 +120,7 @@ const AdminOrderDetailPage = () => {
   if (isLoading) {
     return (
       <AdminLayout>
-        <div className="flex items-center justify-center py-20 text-gray-400">Chargement...</div>
+        <div className="flex items-center justify-center py-20 text-gray-400">{t('admin.orders.loading')}</div>
       </AdminLayout>
     );
   }
@@ -135,7 +128,7 @@ const AdminOrderDetailPage = () => {
   if (!order) {
     return (
       <AdminLayout>
-        <div className="flex items-center justify-center py-20 text-gray-400">Commande introuvable.</div>
+        <div className="flex items-center justify-center py-20 text-gray-400">{t('admin.orders.notFound')}</div>
       </AdminLayout>
     );
   }
@@ -151,7 +144,7 @@ const AdminOrderDetailPage = () => {
           className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700 transition-colors"
         >
           <ArrowLeft size={16} />
-          Retour aux commandes
+          {t('admin.orders.backToOrders')}
         </button>
 
         {/* Order Info */}
@@ -159,36 +152,36 @@ const AdminOrderDetailPage = () => {
           <div className="flex items-center justify-between flex-wrap gap-3">
             <h1 className="font-serif text-2xl text-gray-900">{order.orderNumber}</h1>
             <span className={`px-3 py-1.5 rounded-full text-sm font-medium ${statusColors[order.status] || 'bg-gray-100'}`}>
-              {statusLabels[order.status] || order.status}
+              {t(`admin.status.${order.status}`, order.status)}
             </span>
           </div>
           <div className="text-sm text-gray-500 space-y-1">
-            <p>Créée le: {formatDate(order.createdAt)}</p>
-            <p>Mise à jour: {formatDate(order.updatedAt)}</p>
+            <p>{t('admin.orders.createdAt')} {formatDate(order.createdAt, i18n.language)}</p>
+            <p>{t('admin.orders.updatedAt')} {formatDate(order.updatedAt, i18n.language)}</p>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Customer */}
           <div className="bg-white rounded-xl border p-6 space-y-3">
-            <h2 className="font-medium text-gray-900">Client</h2>
+            <h2 className="font-medium text-gray-900">{t('admin.orders.client')}</h2>
             <div className="text-sm space-y-2">
-              <p><span className="text-gray-500">Nom:</span> {order.customerName}</p>
+              <p><span className="text-gray-500">{t('admin.orders.name')}</span> {order.customerName}</p>
               <p className="flex items-center gap-2">
-                <span className="text-gray-500">Téléphone:</span>
+                <span className="text-gray-500">{t('admin.orders.phone')}</span>
                 <a href={`tel:${order.customerPhone}`} className="text-blue-600 hover:underline flex items-center gap-1" dir="ltr">
                   <Phone size={14} /> {order.customerPhone}
                 </a>
               </p>
-              <p><span className="text-gray-500">Wilaya:</span> {order.wilaya}</p>
-              <p><span className="text-gray-500">Commune:</span> {order.commune}</p>
-              <p><span className="text-gray-500">Adresse:</span> {order.address}</p>
+              <p><span className="text-gray-500">{t('admin.orders.wilaya')}</span> {order.wilaya}</p>
+              <p><span className="text-gray-500">{t('admin.orders.commune')}</span> {order.commune}</p>
+              <p><span className="text-gray-500">{t('admin.orders.address')}</span> {order.address}</p>
             </div>
           </div>
 
           {/* Package */}
           <div className="bg-white rounded-xl border p-6 space-y-3">
-            <h2 className="font-medium text-gray-900">Coffret</h2>
+            <h2 className="font-medium text-gray-900">{t('admin.orders.package')}</h2>
             <div className="text-sm space-y-2">
               <div className="flex items-center gap-2">
                 <span className="font-medium">{order.packageName}</span>
@@ -208,15 +201,15 @@ const AdminOrderDetailPage = () => {
               </ul>
               <div className="pt-3 border-t space-y-1.5">
                 <div className="flex justify-between font-medium">
-                  <span>Total</span>
+                  <span>{t('admin.orders.total')}</span>
                   <span className="tabular-nums">{formatDA(order.totalPrice)}</span>
                 </div>
                 <div className="flex justify-between text-green-700">
-                  <span>Avance 30%</span>
+                  <span>{t('admin.orders.advance')}</span>
                   <span className="tabular-nums">{formatDA(order.advanceAmount)}</span>
                 </div>
                 <div className="flex justify-between text-gray-500">
-                  <span>Reste 70%</span>
+                  <span>{t('admin.orders.remaining')}</span>
                   <span className="tabular-nums">{formatDA(order.remainingAmount)}</span>
                 </div>
               </div>
@@ -226,7 +219,7 @@ const AdminOrderDetailPage = () => {
 
         {/* Payment Screenshot */}
         <div className="bg-white rounded-xl border p-6 space-y-3">
-          <h2 className="font-medium text-gray-900">Capture d'écran du paiement</h2>
+          <h2 className="font-medium text-gray-900">{t('admin.orders.screenshot')}</h2>
           {order.paymentScreenshotUrl ? (
             <img
               src={`${API_BASE}${order.paymentScreenshotUrl}`}
@@ -234,35 +227,35 @@ const AdminOrderDetailPage = () => {
               className="max-w-md rounded-lg border"
             />
           ) : (
-            <p className="text-gray-400 text-sm">Aucune capture d'écran</p>
+            <p className="text-gray-400 text-sm">{t('admin.orders.noScreenshot')}</p>
           )}
         </div>
 
         {/* Status Management */}
         {actions.length > 0 && (
           <div className="bg-white rounded-xl border p-6 space-y-4">
-            <h2 className="font-medium text-gray-900">Gestion du statut</h2>
+            <h2 className="font-medium text-gray-900">{t('admin.orders.statusManagement')}</h2>
             <div className="flex flex-wrap gap-3">
               {actions.map(action => (
                 <AlertDialog key={action.status}>
                   <AlertDialogTrigger asChild>
                     <button className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${actionStyles[action.variant]}`}>
-                      {action.label}
+                      {t(action.labelKey)}
                     </button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle>Confirmer le changement</AlertDialogTitle>
+                      <AlertDialogTitle>{t('admin.orders.confirmChange')}</AlertDialogTitle>
                       <AlertDialogDescription>
-                        Voulez-vous changer le statut de cette commande vers "{statusLabels[action.status] || action.status}" ?
+                        {t('admin.orders.confirmChangeDesc', { status: t(`admin.status.${action.status}`, action.status) })}
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                      <AlertDialogCancel>Annuler</AlertDialogCancel>
+                      <AlertDialogCancel>{t('admin.orders.cancel')}</AlertDialogCancel>
                       <AlertDialogAction
                         onClick={() => statusMutation.mutate({ orderId: order.id, status: action.status })}
                       >
-                        Confirmer
+                        {t('admin.orders.confirm')}
                       </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
@@ -274,20 +267,20 @@ const AdminOrderDetailPage = () => {
 
         {/* Admin Notes */}
         <div className="bg-white rounded-xl border p-6 space-y-4">
-          <h2 className="font-medium text-gray-900">Notes administratives</h2>
+          <h2 className="font-medium text-gray-900">{t('admin.orders.adminNotes')}</h2>
           <textarea
             value={notes}
             onChange={e => setNotes(e.target.value)}
             rows={4}
             className="w-full px-4 py-3 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-[hsl(42,65%,55%)]/40 resize-none"
-            placeholder="Ajouter des notes..."
+            placeholder={t('admin.orders.notesPlaceholder')}
           />
           <button
             onClick={() => notesMutation.mutate({ orderId: order.id, notes })}
             disabled={notesMutation.isPending}
             className="px-6 py-2 bg-[hsl(42,65%,55%)] text-white text-sm font-medium rounded-lg hover:bg-[hsl(42,65%,50%)] transition-colors disabled:opacity-50"
           >
-            {notesMutation.isPending ? 'Sauvegarde...' : 'Sauvegarder'}
+            {notesMutation.isPending ? t('admin.orders.savingNotes') : t('admin.orders.saveNotes')}
           </button>
         </div>
       </div>

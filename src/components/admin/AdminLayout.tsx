@@ -1,25 +1,33 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, ClipboardList, Gift, LogOut, Menu, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { LayoutDashboard, ClipboardList, Gift, LogOut, Menu, Languages } from 'lucide-react';
 import { useAdminStore } from '@/store/adminStore';
-
-const navItems = [
-  { path: '/admin/dashboard', label: 'Tableau de bord', icon: LayoutDashboard },
-  { path: '/admin/orders', label: 'Commandes', icon: ClipboardList },
-  { path: '/admin/packages', label: 'Coffrets', icon: Gift },
-];
 
 interface AdminLayoutProps {
   children: React.ReactNode;
 }
 
 const AdminLayout = ({ children }: AdminLayoutProps) => {
+  const { t, i18n } = useTranslation();
   const location = useLocation();
   const logout = useAdminStore(s => s.logout);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const isAr = i18n.language === 'ar';
+
+  const navItems = [
+    { path: '/admin/dashboard', label: t('admin.nav.dashboard'), icon: LayoutDashboard },
+    { path: '/admin/orders', label: t('admin.nav.orders'), icon: ClipboardList },
+    { path: '/admin/packages', label: t('admin.nav.packages'), icon: Gift },
+  ];
+
+  const toggleLang = () => {
+    const newLang = isAr ? 'fr' : 'ar';
+    i18n.changeLanguage(newLang);
+  };
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen bg-gray-50" dir="ltr">
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div
@@ -36,8 +44,8 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
       >
         {/* Brand */}
         <div className="p-6 border-b border-white/10">
-          <h1 className="font-serif text-xl text-[hsl(42,65%,55%)]">Dar El Khotba</h1>
-          <p className="text-xs text-white/50 mt-1">Administration</p>
+          <h1 className="font-serif text-xl text-[hsl(42,65%,55%)]">{t('admin.brand')}</h1>
+          <p className="text-xs text-white/50 mt-1">{t('admin.subtitle')}</p>
         </div>
 
         {/* Nav */}
@@ -63,15 +71,22 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
           })}
         </nav>
 
-        {/* Logout */}
-        <div className="p-4 border-t border-white/10">
+        {/* Language + Logout */}
+        <div className="p-4 border-t border-white/10 space-y-1">
+          <button
+            onClick={toggleLang}
+            className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm text-white/70 hover:bg-white/5 hover:text-white transition-colors w-full"
+          >
+            <Languages size={18} />
+            <span>{isAr ? 'Français' : 'العربية'}</span>
+          </button>
           <Link
             to="/admin"
             onClick={() => { logout(); setSidebarOpen(false); }}
             className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm text-white/70 hover:bg-white/5 hover:text-white transition-colors"
           >
             <LogOut size={18} />
-            <span>Se déconnecter</span>
+            <span>{t('admin.logout')}</span>
           </Link>
         </div>
       </aside>
@@ -86,7 +101,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
           >
             <Menu size={20} />
           </button>
-          <span className="font-serif text-lg text-[hsl(349,57%,27%)]">Dar El Khotba</span>
+          <span className="font-serif text-lg text-[hsl(349,57%,27%)]">{t('admin.brand')}</span>
         </header>
 
         {/* Content */}

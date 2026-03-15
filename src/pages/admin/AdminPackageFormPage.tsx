@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { adminApi, type PackageApiDto } from '@/services/api';
 import { ArrowLeft, Plus, X } from 'lucide-react';
 import { toast } from 'sonner';
 import AdminLayout from '@/components/admin/AdminLayout';
 
 const AdminPackageFormPage = () => {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const isEdit = !!id;
@@ -55,7 +57,7 @@ const AdminPackageFormPage = () => {
   const createMutation = useMutation({
     mutationFn: (formData: FormData) => adminApi.createPackage(formData),
     onSuccess: () => {
-      toast.success('Coffret créé avec succès');
+      toast.success(t('admin.packages.created'));
       navigate('/admin/packages');
     },
     onError: (err: Error) => toast.error(err.message),
@@ -64,7 +66,7 @@ const AdminPackageFormPage = () => {
   const updateMutation = useMutation({
     mutationFn: (formData: FormData) => adminApi.updatePackage(Number(id), formData),
     onSuccess: () => {
-      toast.success('Coffret mis à jour');
+      toast.success(t('admin.packages.updated'));
       navigate('/admin/packages');
     },
     onError: (err: Error) => toast.error(err.message),
@@ -77,7 +79,7 @@ const AdminPackageFormPage = () => {
     const filteredAr = itemsAr.filter(i => i.trim());
 
     if (!nameFr.trim() || !nameAr.trim() || !descFr.trim() || !descAr.trim() || price < 1 || filteredFr.length === 0 || filteredAr.length === 0) {
-      toast.error('Veuillez remplir tous les champs obligatoires.');
+      toast.error(t('admin.packages.validationError'));
       return;
     }
 
@@ -129,11 +131,11 @@ const AdminPackageFormPage = () => {
           className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700 transition-colors"
         >
           <ArrowLeft size={16} />
-          Retour aux coffrets
+          {t('admin.packages.backToPackages')}
         </button>
 
         <h1 className="text-2xl font-serif text-gray-900">
-          {isEdit ? 'Modifier le coffret' : 'Ajouter un coffret'}
+          {isEdit ? t('admin.packages.editTitle') : t('admin.packages.createTitle')}
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -141,7 +143,7 @@ const AdminPackageFormPage = () => {
             {/* Names */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Nom (Français) *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('admin.packages.nameFr')}</label>
                 <input
                   value={nameFr}
                   onChange={e => setNameFr(e.target.value)}
@@ -150,7 +152,7 @@ const AdminPackageFormPage = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Nom (Arabe) *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('admin.packages.nameAr')}</label>
                 <input
                   value={nameAr}
                   onChange={e => setNameAr(e.target.value)}
@@ -163,7 +165,7 @@ const AdminPackageFormPage = () => {
 
             {/* Descriptions */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Description (Français) *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('admin.packages.descFr')}</label>
               <textarea
                 value={descFr}
                 onChange={e => setDescFr(e.target.value)}
@@ -173,7 +175,7 @@ const AdminPackageFormPage = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Description (Arabe) *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('admin.packages.descAr')}</label>
               <textarea
                 value={descAr}
                 onChange={e => setDescAr(e.target.value)}
@@ -187,7 +189,7 @@ const AdminPackageFormPage = () => {
             {/* Price and Tier */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Prix (DA) *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('admin.packages.price')}</label>
                 <input
                   type="number"
                   value={price || ''}
@@ -198,7 +200,7 @@ const AdminPackageFormPage = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Tier *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('admin.packages.tier')}</label>
                 <select
                   value={tier}
                   onChange={e => setTier(Number(e.target.value))}
@@ -213,7 +215,7 @@ const AdminPackageFormPage = () => {
 
             {/* Items FR */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Articles (Français) *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">{t('admin.packages.itemsFr')}</label>
               <div className="space-y-2">
                 {itemsFr.map((item, idx) => (
                   <div key={idx} className="flex gap-2">
@@ -221,7 +223,7 @@ const AdminPackageFormPage = () => {
                       value={item}
                       onChange={e => updateItemFr(idx, e.target.value)}
                       className="flex-1 px-4 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-[hsl(42,65%,55%)]/40"
-                      placeholder={`Article ${idx + 1}`}
+                      placeholder={t('admin.packages.itemPlaceholderFr', { n: idx + 1 })}
                     />
                     {itemsFr.length > 1 && (
                       <button
@@ -239,14 +241,14 @@ const AdminPackageFormPage = () => {
                   onClick={() => setItemsFr([...itemsFr, ''])}
                   className="flex items-center gap-1 text-xs text-[hsl(42,65%,55%)] hover:text-[hsl(42,65%,45%)]"
                 >
-                  <Plus size={14} /> Ajouter un article
+                  <Plus size={14} /> {t('admin.packages.addItem')}
                 </button>
               </div>
             </div>
 
             {/* Items AR */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Articles (Arabe) *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">{t('admin.packages.itemsAr')}</label>
               <div className="space-y-2">
                 {itemsAr.map((item, idx) => (
                   <div key={idx} className="flex gap-2">
@@ -255,7 +257,7 @@ const AdminPackageFormPage = () => {
                       onChange={e => updateItemAr(idx, e.target.value)}
                       dir="rtl"
                       className="flex-1 px-4 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-[hsl(42,65%,55%)]/40"
-                      placeholder={`المقال ${idx + 1}`}
+                      placeholder={t('admin.packages.itemPlaceholderAr', { n: idx + 1 })}
                     />
                     {itemsAr.length > 1 && (
                       <button
@@ -273,14 +275,14 @@ const AdminPackageFormPage = () => {
                   onClick={() => setItemsAr([...itemsAr, ''])}
                   className="flex items-center gap-1 text-xs text-[hsl(42,65%,55%)] hover:text-[hsl(42,65%,45%)]"
                 >
-                  <Plus size={14} /> Ajouter un article
+                  <Plus size={14} /> {t('admin.packages.addItem')}
                 </button>
               </div>
             </div>
 
             {/* Image */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Image du coffret</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('admin.packages.image')}</label>
               <div
                 onClick={() => document.getElementById('pkg-image')?.click()}
                 className="border-2 border-dashed border-gray-200 rounded-lg p-6 text-center cursor-pointer hover:border-gray-300 transition-colors"
@@ -288,7 +290,7 @@ const AdminPackageFormPage = () => {
                 {imagePreview ? (
                   <img src={imagePreview} alt="Preview" className="max-h-40 mx-auto rounded-lg" />
                 ) : (
-                  <p className="text-sm text-gray-400">Cliquer pour ajouter une image</p>
+                  <p className="text-sm text-gray-400">{t('admin.packages.imageClick')}</p>
                 )}
               </div>
               <input
@@ -308,7 +310,7 @@ const AdminPackageFormPage = () => {
                 onChange={e => setIsActive(e.target.checked)}
                 className="rounded"
               />
-              <span className="text-sm text-gray-700">Actif</span>
+              <span className="text-sm text-gray-700">{t('admin.packages.activeLabel')}</span>
             </label>
           </div>
 
@@ -320,8 +322,8 @@ const AdminPackageFormPage = () => {
               className="px-6 py-2.5 bg-[hsl(42,65%,55%)] text-white text-sm font-medium rounded-lg hover:bg-[hsl(42,65%,50%)] transition-colors disabled:opacity-50"
             >
               {isPending
-                ? 'Enregistrement...'
-                : isEdit ? 'Mettre à jour' : 'Créer le coffret'
+                ? t('admin.packages.saving')
+                : isEdit ? t('admin.packages.update') : t('admin.packages.create')
               }
             </button>
             <button
@@ -329,7 +331,7 @@ const AdminPackageFormPage = () => {
               onClick={() => navigate('/admin/packages')}
               className="px-6 py-2.5 border text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors"
             >
-              Annuler
+              {t('admin.packages.cancelForm')}
             </button>
           </div>
         </form>

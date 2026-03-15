@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAdminStore } from '@/store/adminStore';
 import { KeyRound } from 'lucide-react';
 
 const AdminLoginPage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const login = useAdminStore(s => s.login);
   const isAuthenticated = useAdminStore(s => s.isAuthenticated);
@@ -28,7 +30,7 @@ const AdminLoginPage = () => {
     if (success) {
       navigate('/admin/dashboard', { replace: true });
     } else {
-      setError('Clé invalide. Veuillez réessayer.');
+      setError(t('admin.login.error'));
     }
     setLoading(false);
   };
@@ -38,14 +40,14 @@ const AdminLoginPage = () => {
       <div className="w-full max-w-sm">
         <div className="bg-white rounded-2xl shadow-2xl p-8">
           <div className="text-center mb-8">
-            <h1 className="font-serif text-3xl text-[hsl(349,57%,27%)]">Dar El Khotba</h1>
-            <p className="text-sm text-gray-500 mt-1">Administration</p>
+            <h1 className="font-serif text-3xl text-[hsl(349,57%,27%)]">{t('admin.brand')}</h1>
+            <p className="text-sm text-gray-500 mt-1">{t('admin.subtitle')}</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Clé d'administration
+                {t('admin.login.label')}
               </label>
               <div className="relative">
                 <KeyRound size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -54,7 +56,7 @@ const AdminLoginPage = () => {
                   value={key}
                   onChange={e => { setKey(e.target.value); setError(''); }}
                   className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[hsl(42,65%,55%)]/40 focus:border-[hsl(42,65%,55%)] transition-all"
-                  placeholder="Entrez la clé..."
+                  placeholder={t('admin.login.placeholder')}
                   autoFocus
                 />
               </div>
@@ -66,7 +68,7 @@ const AdminLoginPage = () => {
               disabled={loading}
               className="w-full py-3 bg-[hsl(42,65%,55%)] text-white font-medium rounded-xl hover:bg-[hsl(42,65%,50%)] transition-colors disabled:opacity-50"
             >
-              {loading ? 'Vérification...' : 'Se connecter'}
+              {loading ? t('admin.login.loading') : t('admin.login.submit')}
             </button>
           </form>
         </div>

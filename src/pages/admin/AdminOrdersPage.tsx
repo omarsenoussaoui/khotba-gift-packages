@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { adminApi, type AdminOrderListItem } from '@/services/api';
 import { useWilayas } from '@/hooks/usePackages';
 import { Search, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -16,41 +17,25 @@ const statusColors: Record<string, string> = {
   Cancelled: 'bg-red-100 text-red-800',
 };
 
-const statusLabels: Record<string, string> = {
-  Pending: 'En attente',
-  PaymentVerified: 'Paiement vérifié',
-  Confirmed: 'Confirmée',
-  Preparing: 'En préparation',
-  Shipped: 'Expédiée',
-  Delivered: 'Livrée',
-  Cancelled: 'Annulée',
-};
-
-const statusOptions = [
-  { value: '', label: 'Tous' },
-  { value: 'Pending', label: 'En attente' },
-  { value: 'PaymentVerified', label: 'Paiement vérifié' },
-  { value: 'Confirmed', label: 'Confirmée' },
-  { value: 'Preparing', label: 'En préparation' },
-  { value: 'Shipped', label: 'Expédiée' },
-  { value: 'Delivered', label: 'Livrée' },
-  { value: 'Cancelled', label: 'Annulée' },
-];
+const statusKeys = ['Pending', 'PaymentVerified', 'Confirmed', 'Preparing', 'Shipped', 'Delivered', 'Cancelled'];
 
 function formatDA(amount: number) {
   return amount.toLocaleString('fr-FR') + ' DA';
 }
 
-function formatDate(dateStr: string) {
+function formatDate(dateStr: string, locale: string) {
   const d = new Date(dateStr);
-  return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' }) +
-    ', ' + d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+  const loc = locale === 'ar' ? 'ar-DZ' : 'fr-FR';
+  return d.toLocaleDateString(loc, { day: 'numeric', month: 'short', year: 'numeric' }) +
+    ', ' + d.toLocaleTimeString(loc, { hour: '2-digit', minute: '2-digit' });
 }
 
 const LIMIT = 20;
 
 const AdminOrdersPage = () => {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const isAr = i18n.language === 'ar';
   const [status, setStatus] = useState('');
   const [wilaya, setWilaya] = useState('');
   const [search, setSearch] = useState('');
@@ -77,7 +62,7 @@ const AdminOrdersPage = () => {
   return (
     <AdminLayout>
       <div className="space-y-6">
-        <h1 className="text-2xl font-serif text-gray-900">Commandes</h1>
+        <h1 className="text-2xl font-serif text-gray-900">{t('admin.orders.title')}</h1>
 
         {/* Filters */}
         <div className="flex flex-wrap gap-3">
@@ -86,8 +71,9 @@ const AdminOrdersPage = () => {
             onChange={e => { setStatus(e.target.value); setPage(1); }}
             className="px-3 py-2 rounded-lg border border-gray-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[hsl(42,65%,55%)]/40"
           >
-            {statusOptions.map(opt => (
-              <option key={opt.value} value={opt.value}>{opt.label}</option>
+            <option value="">{t('admin.orders.filterAll')}</option>
+            {statusKeys.map(key => (
+              <option key={key} value={key}>{t(`admin.status.${key}`)}</option>
             ))}
           </select>
 
@@ -96,9 +82,9 @@ const AdminOrdersPage = () => {
             onChange={e => { setWilaya(e.target.value); setPage(1); }}
             className="px-3 py-2 rounded-lg border border-gray-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[hsl(42,65%,55%)]/40"
           >
-            <option value="">Toutes les wilayas</option>
+            <option value="">{t('admin.orders.allWilayas')}</option>
             {wilayasList.map(w => (
-              <option key={w.code} value={w.code}>{w.code} - {w.nameFr}</option>
+              <option key={w.code} value={w.code}>{w.code} - {isAr ? w.nameAr : w.nameFr}</option>
             ))}
           </select>
 
@@ -107,7 +93,7 @@ const AdminOrdersPage = () => {
             <input
               value={search}
               onChange={e => { setSearch(e.target.value); setPage(1); }}
-              placeholder="Rechercher par N°, nom, téléphone..."
+              placeholder={t('admin.orders.searchPlaceholder')}
               className="w-full pl-9 pr-4 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-[hsl(42,65%,55%)]/40"
             />
           </div>
@@ -118,21 +104,21 @@ const AdminOrdersPage = () => {
           <table className="w-full text-sm">
             <thead>
               <tr className="text-left text-gray-500 border-b bg-gray-50">
-                <th className="px-4 py-3 font-medium">N° commande</th>
-                <th className="px-4 py-3 font-medium">Client</th>
-                <th className="px-4 py-3 font-medium hidden md:table-cell">Téléphone</th>
-                <th className="px-4 py-3 font-medium hidden lg:table-cell">Coffret</th>
-                <th className="px-4 py-3 font-medium hidden lg:table-cell">Wilaya</th>
-                <th className="px-4 py-3 font-medium">Total</th>
-                <th className="px-4 py-3 font-medium">Statut</th>
-                <th className="px-4 py-3 font-medium hidden md:table-cell">Date</th>
+                <th className="px-4 py-3 font-medium">{t('admin.orders.colOrderNumber')}</th>
+                <th className="px-4 py-3 font-medium">{t('admin.orders.colClient')}</th>
+                <th className="px-4 py-3 font-medium hidden md:table-cell">{t('admin.orders.colPhone')}</th>
+                <th className="px-4 py-3 font-medium hidden lg:table-cell">{t('admin.orders.colPackage')}</th>
+                <th className="px-4 py-3 font-medium hidden lg:table-cell">{t('admin.orders.colWilaya')}</th>
+                <th className="px-4 py-3 font-medium">{t('admin.orders.colTotal')}</th>
+                <th className="px-4 py-3 font-medium">{t('admin.orders.colStatus')}</th>
+                <th className="px-4 py-3 font-medium hidden md:table-cell">{t('admin.orders.colDate')}</th>
               </tr>
             </thead>
             <tbody>
               {isLoading ? (
-                <tr><td colSpan={8} className="px-4 py-8 text-center text-gray-400">Chargement...</td></tr>
+                <tr><td colSpan={8} className="px-4 py-8 text-center text-gray-400">{t('admin.orders.loading')}</td></tr>
               ) : orders.length === 0 ? (
-                <tr><td colSpan={8} className="px-4 py-8 text-center text-gray-400">Aucune commande trouvée.</td></tr>
+                <tr><td colSpan={8} className="px-4 py-8 text-center text-gray-400">{t('admin.orders.noResults')}</td></tr>
               ) : (
                 orders.map((order: AdminOrderListItem) => (
                   <tr
@@ -148,10 +134,10 @@ const AdminOrdersPage = () => {
                     <td className="px-4 py-3 tabular-nums font-medium">{formatDA(order.totalPrice)}</td>
                     <td className="px-4 py-3">
                       <span className={`text-xs px-2 py-1 rounded-full ${statusColors[order.status] || 'bg-gray-100'}`}>
-                        {statusLabels[order.status] || order.status}
+                        {t(`admin.status.${order.status}`, order.status)}
                       </span>
                     </td>
-                    <td className="px-4 py-3 hidden md:table-cell text-gray-500">{formatDate(order.createdAt)}</td>
+                    <td className="px-4 py-3 hidden md:table-cell text-gray-500">{formatDate(order.createdAt, i18n.language)}</td>
                   </tr>
                 ))
               )}

@@ -4,9 +4,9 @@ services:
       context: .
       dockerfile: Dockerfile.backend
     ports:
-      - "5050:5050"
+      - "3050:5050"
     environment:
-      - AllowedOrigins=http://localhost:8080
+      - AllowedOrigins=http://62.169.24.169:3080
       - AdminKey=dar-el-khotba-admin-2026
     volumes:
       - db-data:/app/data
@@ -17,9 +17,9 @@ services:
       context: .
       dockerfile: Dockerfile.frontend
       args:
-        VITE_API_URL: http://localhost:5050/api
+        VITE_API_URL: http://62.169.24.169:3050/api
     ports:
-      - "8080:8080"
+      - "3080:8080"
     depends_on:
       - backend
 

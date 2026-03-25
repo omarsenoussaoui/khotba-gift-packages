@@ -124,6 +124,7 @@ function mapApiPackageToPackageItem(dto: PackageApiDto): PackageItem {
     descriptionAr: dto.descriptionAr,
     itemsFr: dto.itemsFr,
     itemsAr: dto.itemsAr,
+    imageUrl: dto.imageUrl ? `${API_BASE.replace('/api', '')}${dto.imageUrl}` : null,
   };
 }
 

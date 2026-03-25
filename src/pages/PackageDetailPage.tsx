@@ -56,9 +56,13 @@ const PackageDetailPage = () => {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
-            className={`aspect-square rounded-2xl bg-gradient-to-br ${tierGradients[pkg.tier - 1]} geometric-pattern flex items-center justify-center`}
+            className={`aspect-square rounded-2xl overflow-hidden ${!pkg.imageUrl ? `bg-gradient-to-br ${tierGradients[pkg.tier - 1]} geometric-pattern flex items-center justify-center` : ''}`}
           >
-            <span className="font-serif text-5xl text-primary-foreground/20 font-light">{name}</span>
+            {pkg.imageUrl ? (
+              <img src={pkg.imageUrl} alt={name} className="w-full h-full object-cover" />
+            ) : (
+              <span className="font-serif text-5xl text-primary-foreground/20 font-light">{name}</span>
+            )}
           </motion.div>
 
           {/* Details */}

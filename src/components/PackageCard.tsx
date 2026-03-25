@@ -42,9 +42,15 @@ const PackageCard = ({ pkg, index = 0 }: PackageCardProps) => {
           </div>
 
           {/* Image */}
-          <div className={`aspect-[4/5] overflow-hidden rounded-xl bg-gradient-to-br ${tierGradients[pkg.tier - 1]} geometric-pattern flex items-center justify-center`}>
-            <span className="font-serif text-4xl text-primary-foreground/30 font-light">{name}</span>
-          </div>
+          {pkg.imageUrl ? (
+            <div className="aspect-[4/5] overflow-hidden rounded-xl">
+              <img src={pkg.imageUrl} alt={name} className="w-full h-full object-cover" />
+            </div>
+          ) : (
+            <div className={`aspect-[4/5] overflow-hidden rounded-xl bg-gradient-to-br ${tierGradients[pkg.tier - 1]} geometric-pattern flex items-center justify-center`}>
+              <span className="font-serif text-4xl text-primary-foreground/30 font-light">{name}</span>
+            </div>
+          )}
 
           {/* Info */}
           <div className="mt-5 space-y-2">

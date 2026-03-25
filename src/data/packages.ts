@@ -9,6 +9,7 @@ export interface PackageItem {
   descriptionAr: string;
   itemsFr: string[];
   itemsAr: string[];
+  imageUrl?: string | null;
 }
 
 export const packages: PackageItem[] = [
